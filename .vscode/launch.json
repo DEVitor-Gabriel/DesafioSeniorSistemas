@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "REST API [https]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/Infrastructure/Infrastructure.API/Infrastructure.API.csproj",
+            "launchConfigurationId": "TargetFramework=;https"
+        },
+        {
+            "name": "REST API [Default Configuration]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/Infrastructure/Infrastructure.API/Infrastructure.API.csproj"
+        },
+        {
+            "name": "REST API [http]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/Infrastructure/Infrastructure.API/Infrastructure.API.csproj",
+            "launchConfigurationId": "TargetFramework=;http"
+        }
+    ]
+}

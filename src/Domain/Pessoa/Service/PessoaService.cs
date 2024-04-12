@@ -1,4 +1,5 @@
 using DesafioSeniorSistemas.Domain.Interface;
+using DesafioSeniorSistemas.Domain.Pessoa.DTO;
 using DesafioSeniorSistemas.Domain.Pessoa.Entity;
 using DesafioSeniorSistemas.Domain.Pessoa.Factory;
 using DesafioSeniorSistemas.Domain.Pessoa.Interface;
@@ -16,25 +17,56 @@ public class PessoaService : IPessoaService
         _pessoaRepository = pessoaRepository;
         _logger = logger;
     }
-    public async Task<List<PessoaEntity>> GetAll()
+    public async Task<List<ReadPessoaDtoOutput>> GetAll()
     {
         List<PessoaEntity> listPessoa  = await _pessoaRepository.GetAll();
-        return listPessoa;
+        List<ReadPessoaDtoOutput> listPessoaDto = listPessoa.Select(pessoa => new ReadPessoaDtoOutput
+        {
+            Id = pessoa.Id,
+            Codigo = pessoa.Codigo,
+            Nome = pessoa.Nome,
+            Cpf = pessoa.CPF.Numero,
+            Uf = pessoa.UF,
+            DataNascimento = pessoa.DataNascimento
+        }).ToList();
+
+        return listPessoaDto;
     }
 
-    public async Task<PessoaEntity> GetByCodigo(string codigo)
+    public async Task<ReadPessoaDtoOutput> GetByCodigo(string codigo)
     {
         PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo);
-        return pessoa;
+        ReadPessoaDtoOutput pessoaDto = new()
+        {
+            Id = pessoa.Id,
+            Codigo = pessoa.Codigo,
+            Nome = pessoa.Nome,
+            Cpf = pessoa.CPF.Numero,
+            Uf = pessoa.UF,
+            DataNascimento = pessoa.DataNascimento
+        };
+
+        return pessoaDto;
+
     }
 
-    public async Task<List<PessoaEntity>> GetByUf(string uf)
+    public async Task<List<ReadPessoaDtoOutput>> GetByUf(string uf)
     {
         List<PessoaEntity> listPessoa = await _pessoaRepository.GetByUf(uf: uf);
-        return listPessoa;
+        List<ReadPessoaDtoOutput> listPessoaDto = listPessoa.Select(pessoa => new ReadPessoaDtoOutput
+        {
+            Id = pessoa.Id,
+            Codigo = pessoa.Codigo,
+            Nome = pessoa.Nome,
+            Cpf = pessoa.CPF.Numero,
+            Uf = pessoa.UF,
+            DataNascimento = pessoa.DataNascimento
+        }).ToList();
+
+        return listPessoaDto;
     }
 
-    public async Task<PessoaEntity> Create(string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
+    public async Task<ReadPessoaDtoOutput> Create(string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
     {
         PessoaEntity pessoa = PessoaFactory.Create(
             id: Guid.NewGuid(),
@@ -48,10 +80,20 @@ public class PessoaService : IPessoaService
         await _pessoaRepository.Create(entity: pessoa);
         _logger.Info("Pessoa criada com sucesso");
 
-        return pessoa;
+        ReadPessoaDtoOutput pessoaDto = new()
+        {
+            Id = pessoa.Id,
+            Codigo = pessoa.Codigo,
+            Nome = pessoa.Nome,
+            Cpf = pessoa.CPF.Numero,
+            Uf = pessoa.UF,
+            DataNascimento = pessoa.DataNascimento
+        };
+
+        return pessoaDto;
     }
 
-    public async Task<PessoaEntity> Update(Guid id, string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
+    public async Task<ReadPessoaDtoOutput> Update(Guid id, string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
     {
         PessoaEntity pessoa = await _pessoaRepository.GetById(id: id) ?? throw new NotFoundException("Pessoa não encontrada");
 
@@ -67,11 +109,21 @@ public class PessoaService : IPessoaService
         await _pessoaRepository.Update(entity: pessoaFactory);
         _logger.Info("Pessoa atualizada com sucesso");
 
-        return pessoa;
+        ReadPessoaDtoOutput pessoaDto = new()
+        {
+            Id = pessoaFactory.Id,
+            Codigo = pessoaFactory.Codigo,
+            Nome = pessoaFactory.Nome,
+            Cpf = pessoaFactory.CPF.Numero,
+            Uf = pessoaFactory.UF,
+            DataNascimento = pessoaFactory.DataNascimento
+        };
+
+        return pessoaDto;
         
     }
 
-    public async Task<PessoaEntity> UpdatePatch(Guid id, string? codigo, string? nome, string? cpf, string? uf, DateTime? dataNascimento)
+    public async Task<ReadPessoaDtoOutput> UpdatePatch(Guid id, string? codigo, string? nome, string? cpf, string? uf, DateTime? dataNascimento)
     {
         PessoaEntity pessoa = await _pessoaRepository.GetById(id: id) ?? throw new NotFoundException("Pessoa não encontrada");
         
@@ -105,7 +157,17 @@ public class PessoaService : IPessoaService
         await _pessoaRepository.Update(entity: pessoa);
         _logger.Info("Pessoa atualizada com sucesso");
 
-        return pessoa;
+        ReadPessoaDtoOutput pessoaDto = new()
+        {
+            Id = pessoa.Id,
+            Codigo = pessoa.Codigo,
+            Nome = pessoa.Nome,
+            Cpf = pessoa.CPF.Numero,
+            Uf = pessoa.UF,
+            DataNascimento = pessoa.DataNascimento
+        };
+
+        return pessoaDto;
 
     }
 

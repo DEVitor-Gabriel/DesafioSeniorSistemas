@@ -46,6 +46,7 @@ public class PessoaService : IPessoaService
         );
 
         await _pessoaRepository.Create(entity: pessoa);
+        _logger.Info("Pessoa criada com sucesso");
 
         return pessoa;
     }
@@ -64,6 +65,7 @@ public class PessoaService : IPessoaService
         );
 
         await _pessoaRepository.Update(entity: pessoaFactory);
+        _logger.Info("Pessoa atualizada com sucesso");
 
         return pessoa;
         
@@ -76,26 +78,32 @@ public class PessoaService : IPessoaService
         if (codigo != null)
         {
             pessoa.ChangeCodigo(codigo: codigo);
+            _logger.Info("Código alterado");
         
         }
         if (nome != null)
         {
             pessoa.ChangeNome(nome: nome);
+            _logger.Info("Nome alterado");
         }
         if (cpf != null)
         {
             pessoa.ChangeCPF(cpf: cpf);
+            _logger.Info("CPF alterado");
         }
         if (uf != null)
         {
             pessoa.ChangeUF(uf: uf);
+            _logger.Info("UF alterado");
         }
         if (dataNascimento != null)
         {
             pessoa.ChangeDataNascimento(dataNascimento: (DateTime)dataNascimento);
+            _logger.Info("Data de nascimento alterada");
         }
 
         await _pessoaRepository.Update(entity: pessoa);
+        _logger.Info("Pessoa atualizada com sucesso");
 
         return pessoa;
 
@@ -103,9 +111,11 @@ public class PessoaService : IPessoaService
 
     public async Task Delete(Guid id)
     {
+        _logger.Warning("Deletando pessoa");
         PessoaEntity pessoa = await _pessoaRepository.GetById(id) ?? throw new NotFoundException("Pessoa não encontrada");
 
         await _pessoaRepository.Delete(entity: pessoa);
+        _logger.Info("Pessoa deletada com sucesso");
     }
 
 

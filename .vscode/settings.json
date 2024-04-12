@@ -2,9 +2,13 @@
     "cSpell.words": [
         "codigo",
         "desafio",
+        "digito",
         "nascimento",
+        "numero",
         "pessoa",
-        "sistemas"
+        "raiz",
+        "sistemas",
+        "verificador"
     ],
     "cmake.configureOnOpen": false
 }

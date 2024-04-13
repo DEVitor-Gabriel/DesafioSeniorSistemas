@@ -119,8 +119,14 @@ public class PessoaRepository : IPessoaRepository
 
     public async Task<long> GetNextCodigo()
     {
-        long? maxCodigo = await _context.Pessoa.MaxAsync(p => p.Codigo);
-
-        return maxCodigo.GetValueOrDefault() + 1;
+        try
+        {
+            long? maxCodigo = await _context.Pessoa.MaxAsync(p => p.Codigo);
+            return maxCodigo.GetValueOrDefault() + 1;
+        }
+        catch (InvalidOperationException)
+        {
+            return 1;
+        }
     }
 }

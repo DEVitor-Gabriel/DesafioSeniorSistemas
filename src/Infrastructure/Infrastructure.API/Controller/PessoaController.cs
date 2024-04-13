@@ -54,8 +54,15 @@ public class PessoaController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Create(CreatePessoaDtoInput dto)
     {
+        try
+        {
         ReadPessoaDtoOutput output = await _pessoaService.Create(dto);
         return CreatedAtAction(nameof(GetByCodigo), new { codigo = output.Codigo }, output);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPut("Update")]
@@ -73,9 +80,9 @@ public class PessoaController : ControllerBase
         }
     }
 
-    [HttpPatch("UpdatePatch")]
+    [HttpPatch("Patch")]
     [Authorize]
-    public async Task<IActionResult> UpdatePatch(UpdatePatchPessoaDtoInput dto)
+    public async Task<IActionResult> Patch(UpdatePatchPessoaDtoInput dto)
     {
         try
         {

@@ -19,14 +19,14 @@ public class PessoaService : IPessoaService
     }
     public async Task<List<ReadPessoaDtoOutput>> GetAll()
     {
-        List<PessoaEntity> listPessoa  = await _pessoaRepository.GetAll();
+        List<PessoaEntity> listPessoa = await _pessoaRepository.GetAll();
         List<ReadPessoaDtoOutput> listPessoaDto = listPessoa.Select(pessoa => new ReadPessoaDtoOutput
         {
             Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
-            Cpf = pessoa.CPF.Numero,
-            Uf = pessoa.UF,
+            CPF = pessoa.CPF.Numero,
+            UF = pessoa.UF,
             DataNascimento = pessoa.DataNascimento
         }).ToList();
 
@@ -35,18 +35,25 @@ public class PessoaService : IPessoaService
 
     public async Task<ReadPessoaDtoOutput> GetByCodigo(string codigo)
     {
-        PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo);
-        ReadPessoaDtoOutput pessoaDto = new()
+        try
         {
-            Id = pessoa.Id,
-            Codigo = pessoa.Codigo,
-            Nome = pessoa.Nome,
-            Cpf = pessoa.CPF.Numero,
-            Uf = pessoa.UF,
-            DataNascimento = pessoa.DataNascimento
-        };
+            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo);
+            ReadPessoaDtoOutput pessoaDto = new()
+            {
+                Id = pessoa.Id,
+                Codigo = pessoa.Codigo,
+                Nome = pessoa.Nome,
+                CPF = pessoa.CPF.Numero,
+                UF = pessoa.UF,
+                DataNascimento = pessoa.DataNascimento
+            };
 
-        return pessoaDto;
+            return pessoaDto;
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new NotFoundException("Pessoa não encontrada");
+        }
 
     }
 
@@ -58,23 +65,23 @@ public class PessoaService : IPessoaService
             Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
-            Cpf = pessoa.CPF.Numero,
-            Uf = pessoa.UF,
+            CPF = pessoa.CPF.Numero,
+            UF = pessoa.UF,
             DataNascimento = pessoa.DataNascimento
         }).ToList();
 
         return listPessoaDto;
     }
 
-    public async Task<ReadPessoaDtoOutput> Create(string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
+    public async Task<ReadPessoaDtoOutput> Create(CreatePessoaDtoInput dto)
     {
         PessoaEntity pessoa = PessoaFactory.Create(
             id: Guid.NewGuid(),
-            codigo: codigo,
-            nome: nome,
-            cpf: cpf,
-            uf: uf,
-            dataNascimento: dataNascimento
+            codigo: dto.Codigo,
+            nome: dto.Nome,
+            cpf: dto.CPF,
+            uf: dto.UF,
+            dataNascimento: dto.DataNascimento
         );
 
         await _pessoaRepository.Create(entity: pessoa);
@@ -85,99 +92,119 @@ public class PessoaService : IPessoaService
             Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
-            Cpf = pessoa.CPF.Numero,
-            Uf = pessoa.UF,
+            CPF = pessoa.CPF.Numero,
+            UF = pessoa.UF,
             DataNascimento = pessoa.DataNascimento
         };
 
         return pessoaDto;
     }
 
-    public async Task<ReadPessoaDtoOutput> Update(Guid id, string codigo, string nome, string cpf, string uf, DateTime dataNascimento)
+    public async Task<ReadPessoaDtoOutput> Update(UpdatePessoaDtoInput dto)
     {
-        PessoaEntity pessoa = await _pessoaRepository.GetById(id: id) ?? throw new NotFoundException("Pessoa não encontrada");
-
-        PessoaEntity pessoaFactory = PessoaFactory.Create(
-            id: id,
-            codigo: codigo,
-            nome: nome,
-            cpf: cpf,
-            uf: uf,
-            dataNascimento: dataNascimento
-        );
-
-        await _pessoaRepository.Update(entity: pessoaFactory);
-        _logger.Info("Pessoa atualizada com sucesso");
-
-        ReadPessoaDtoOutput pessoaDto = new()
+        try
         {
-            Id = pessoaFactory.Id,
-            Codigo = pessoaFactory.Codigo,
-            Nome = pessoaFactory.Nome,
-            Cpf = pessoaFactory.CPF.Numero,
-            Uf = pessoaFactory.UF,
-            DataNascimento = pessoaFactory.DataNascimento
-        };
+            PessoaEntity pessoa = await _pessoaRepository.GetById(id: dto.Id);
+            PessoaEntity pessoaFactory = PessoaFactory.Create(
+                id: pessoa.Id,
+                codigo: dto.Codigo,
+                nome: dto.Nome,
+                cpf: dto.CPF,
+                uf: dto.UF,
+                dataNascimento: dto.DataNascimento
+            );
 
-        return pessoaDto;
-        
+            await _pessoaRepository.Update(entity: pessoaFactory);
+            _logger.Info("Pessoa atualizada com sucesso");
+
+            ReadPessoaDtoOutput pessoaDto = new()
+            {
+                Id = pessoaFactory.Id,
+                Codigo = pessoaFactory.Codigo,
+                Nome = pessoaFactory.Nome,
+                CPF = pessoaFactory.CPF.Numero,
+                UF = pessoaFactory.UF,
+                DataNascimento = pessoaFactory.DataNascimento
+            };
+
+            return pessoaDto;
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new NotFoundException("Pessoa não encontrada");
+        }
     }
 
-    public async Task<ReadPessoaDtoOutput> UpdatePatch(Guid id, string? codigo, string? nome, string? cpf, string? uf, DateTime? dataNascimento)
+    public async Task<ReadPessoaDtoOutput> UpdatePatch(UpdatePatchPessoaDtoInput dto)
     {
-        PessoaEntity pessoa = await _pessoaRepository.GetById(id: id) ?? throw new NotFoundException("Pessoa não encontrada");
-        
-        if (codigo != null)
+        try
         {
-            pessoa.ChangeCodigo(codigo: codigo);
-            _logger.Info("Código alterado");
-        
-        }
-        if (nome != null)
-        {
-            pessoa.ChangeNome(nome: nome);
-            _logger.Info("Nome alterado");
-        }
-        if (cpf != null)
-        {
-            pessoa.ChangeCPF(cpf: cpf);
-            _logger.Info("CPF alterado");
-        }
-        if (uf != null)
-        {
-            pessoa.ChangeUF(uf: uf);
-            _logger.Info("UF alterado");
-        }
-        if (dataNascimento != null)
-        {
-            pessoa.ChangeDataNascimento(dataNascimento: (DateTime)dataNascimento);
-            _logger.Info("Data de nascimento alterada");
-        }
+            PessoaEntity pessoa = await _pessoaRepository.GetById(id: dto.Id);
 
-        await _pessoaRepository.Update(entity: pessoa);
-        _logger.Info("Pessoa atualizada com sucesso");
+            if (dto.Codigo != null)
+            {
+                pessoa.ChangeCodigo(codigo: dto.Codigo);
+                _logger.Info("Código alterado");
 
-        ReadPessoaDtoOutput pessoaDto = new()
+            }
+            if (dto.Nome != null)
+            {
+                pessoa.ChangeNome(nome: dto.Nome);
+                _logger.Info("Nome alterado");
+            }
+            if (dto.CPF != null)
+            {
+                pessoa.ChangeCPF(cpf: dto.CPF);
+                _logger.Info("CPF alterado");
+            }
+            if (dto.UF != null)
+            {
+                pessoa.ChangeUF(uf: dto.UF);
+                _logger.Info("UF alterado");
+            }
+            if (dto.DataNascimento != null)
+            {
+                pessoa.ChangeDataNascimento(dataNascimento: (DateTime)dto.DataNascimento);
+                _logger.Info("Data de nascimento alterada");
+            }
+
+            await _pessoaRepository.Update(entity: pessoa);
+            _logger.Info("Pessoa atualizada com sucesso");
+
+            ReadPessoaDtoOutput pessoaDto = new()
+            {
+                Id = pessoa.Id,
+                Codigo = pessoa.Codigo,
+                Nome = pessoa.Nome,
+                CPF = pessoa.CPF.Numero,
+                UF = pessoa.UF,
+                DataNascimento = pessoa.DataNascimento
+            };
+
+            return pessoaDto;
+        }
+        catch (KeyNotFoundException)
         {
-            Id = pessoa.Id,
-            Codigo = pessoa.Codigo,
-            Nome = pessoa.Nome,
-            Cpf = pessoa.CPF.Numero,
-            Uf = pessoa.UF,
-            DataNascimento = pessoa.DataNascimento
-        };
-
-        return pessoaDto;
+            throw new NotFoundException("Pessoa não encontrada");
+        }
 
     }
 
     public async Task Delete(Guid id)
     {
-        _logger.Warning("Deletando pessoa");
-        PessoaEntity pessoa = await _pessoaRepository.GetById(id) ?? throw new NotFoundException("Pessoa não encontrada");
+        try
+        {
+            _logger.Warning("Deletando pessoa");
+            PessoaEntity pessoa = await _pessoaRepository.GetById(id);
 
-        await _pessoaRepository.Delete(entity: pessoa);
-        _logger.Info("Pessoa deletada com sucesso");
+            await _pessoaRepository.Delete(entity: pessoa);
+            _logger.Info("Pessoa deletada com sucesso");
+
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new NotFoundException("Pessoa não encontrada");
+        }
     }
 
 

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
+using dotenv.net;
 
 using DesafioSeniorSistemas.Domain.Pessoa.Interface;
 using DesafioSeniorSistemas.Domain.Pessoa.Service;
@@ -9,11 +11,9 @@ using DesafioSeniorSistemas.Infrastructure.Repository.Context;
 using DesafioSeniorSistemas.Infrastructure.Repository.Pessoa;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
+DotEnv.Load();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,7 +27,7 @@ builder.Services.AddScoped<IPessoaService>(
 );
 
 // Configuração da autenticação JWT
-string key = builder.Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key");
+string key = Environment.GetEnvironmentVariable("JWT_TOKEN_KEY") ?? throw new ArgumentNullException("Jwt:Key");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -40,6 +40,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
         };
     });
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Desafio Senior Sistemas API", 
+        Version = "v1" 
+    });
+});
 
 var app = builder.Build();
 

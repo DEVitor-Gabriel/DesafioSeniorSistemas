@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     private static string GenerateJwtToken()
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        string key = "54gY8BWmk8nqSMO6GVEFvbh53CsRBrHg";
+        string key = Environment.GetEnvironmentVariable("JWT_TOKEN_KEY") ?? throw new ArgumentNullException("Jwt:Key");
         byte[] byteKey = Encoding.ASCII.GetBytes(key);
         int expirationTimeInHours = 1;
 

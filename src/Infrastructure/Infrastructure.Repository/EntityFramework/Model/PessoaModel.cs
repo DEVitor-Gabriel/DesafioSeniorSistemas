@@ -7,7 +7,9 @@ public class PessoaModel
 {
     [Key]
     public Guid Id { get; set; }
-    public required string Codigo { get; set; }
+    [Key]
+    [Required]
+    public required long Codigo { get; set; }
     public required string Nome { get; set; }
     public required string CPF { get; set; }
     public required string UF { get; set; }

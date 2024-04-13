@@ -22,7 +22,6 @@ public class PessoaService : IPessoaService
         List<PessoaEntity> listPessoa = await _pessoaRepository.GetAll();
         List<ReadPessoaDtoOutput> listPessoaDto = listPessoa.Select(pessoa => new ReadPessoaDtoOutput
         {
-            Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
             CPF = pessoa.CPF.Numero,
@@ -33,14 +32,13 @@ public class PessoaService : IPessoaService
         return listPessoaDto;
     }
 
-    public async Task<ReadPessoaDtoOutput> GetByCodigo(string codigo)
+    public async Task<ReadPessoaDtoOutput> GetByCodigo(long codigo)
     {
         try
         {
-            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo);
+            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo) ?? throw new KeyNotFoundException();
             ReadPessoaDtoOutput pessoaDto = new()
             {
-                Id = pessoa.Id,
                 Codigo = pessoa.Codigo,
                 Nome = pessoa.Nome,
                 CPF = pessoa.CPF.Numero,
@@ -62,7 +60,6 @@ public class PessoaService : IPessoaService
         List<PessoaEntity> listPessoa = await _pessoaRepository.GetByUf(uf: uf);
         List<ReadPessoaDtoOutput> listPessoaDto = listPessoa.Select(pessoa => new ReadPessoaDtoOutput
         {
-            Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
             CPF = pessoa.CPF.Numero,
@@ -77,7 +74,7 @@ public class PessoaService : IPessoaService
     {
         PessoaEntity pessoa = PessoaFactory.Create(
             id: Guid.NewGuid(),
-            codigo: dto.Codigo,
+            codigo: await _pessoaRepository.GetNextCodigo(),
             nome: dto.Nome,
             cpf: dto.CPF,
             uf: dto.UF,
@@ -89,7 +86,6 @@ public class PessoaService : IPessoaService
 
         ReadPessoaDtoOutput pessoaDto = new()
         {
-            Id = pessoa.Id,
             Codigo = pessoa.Codigo,
             Nome = pessoa.Nome,
             CPF = pessoa.CPF.Numero,
@@ -104,10 +100,10 @@ public class PessoaService : IPessoaService
     {
         try
         {
-            PessoaEntity pessoa = await _pessoaRepository.GetById(id: dto.Id);
+            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: dto.Codigo) ?? throw new KeyNotFoundException();
             PessoaEntity pessoaFactory = PessoaFactory.Create(
                 id: pessoa.Id,
-                codigo: dto.Codigo,
+                codigo: pessoa.Codigo,
                 nome: dto.Nome,
                 cpf: dto.CPF,
                 uf: dto.UF,
@@ -119,7 +115,6 @@ public class PessoaService : IPessoaService
 
             ReadPessoaDtoOutput pessoaDto = new()
             {
-                Id = pessoaFactory.Id,
                 Codigo = pessoaFactory.Codigo,
                 Nome = pessoaFactory.Nome,
                 CPF = pessoaFactory.CPF.Numero,
@@ -139,14 +134,8 @@ public class PessoaService : IPessoaService
     {
         try
         {
-            PessoaEntity pessoa = await _pessoaRepository.GetById(id: dto.Id);
+            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: dto.Codigo) ?? throw new KeyNotFoundException();
 
-            if (dto.Codigo != null)
-            {
-                pessoa.ChangeCodigo(codigo: dto.Codigo);
-                _logger.Info("Código alterado");
-
-            }
             if (dto.Nome != null)
             {
                 pessoa.ChangeNome(nome: dto.Nome);
@@ -173,7 +162,6 @@ public class PessoaService : IPessoaService
 
             ReadPessoaDtoOutput pessoaDto = new()
             {
-                Id = pessoa.Id,
                 Codigo = pessoa.Codigo,
                 Nome = pessoa.Nome,
                 CPF = pessoa.CPF.Numero,
@@ -190,12 +178,12 @@ public class PessoaService : IPessoaService
 
     }
 
-    public async Task Delete(Guid id)
+    public async Task Delete(long codigo)
     {
         try
         {
             _logger.Warning("Deletando pessoa");
-            PessoaEntity pessoa = await _pessoaRepository.GetById(id);
+            PessoaEntity pessoa = await _pessoaRepository.GetByCodigo(codigo: codigo) ?? throw new KeyNotFoundException();
 
             await _pessoaRepository.Delete(entity: pessoa);
             _logger.Info("Pessoa deletada com sucesso");

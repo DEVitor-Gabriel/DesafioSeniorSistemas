@@ -38,15 +38,27 @@ public class PessoaRepository : IPessoaRepository
         return listPessoaEntity;
     }
 
-    public async Task<PessoaEntity> GetById(Guid id)
+    public async Task<PessoaEntity?> GetById(Guid id)
     {
-        PessoaModel pessoaModel = await _context.Pessoa.FirstOrDefaultAsync(p => p.Id == id) ?? throw new KeyNotFoundException("Pessoa não encontrada");
+        PessoaModel? pessoaModel = await _context.Pessoa.FirstOrDefaultAsync(p => p.Id == id);
+
+        if (pessoaModel == null)
+        {
+            return null;
+        }
+
         return UsingFactory(pessoaModel);
     }
 
-    public async Task<PessoaEntity> GetByCodigo(string codigo)
+    public async Task<PessoaEntity?> GetByCodigo(long codigo)
     {
-        PessoaModel pessoaModel = await _context.Pessoa.FirstOrDefaultAsync(p => p.Codigo == codigo) ?? throw new KeyNotFoundException("Pessoa não encontrada");
+        PessoaModel? pessoaModel = await _context.Pessoa.FirstOrDefaultAsync(p => p.Codigo == codigo);
+
+        if (pessoaModel == null)
+        {
+            return null;
+        }
+
         return UsingFactory(pessoaModel);
     }
 
@@ -103,5 +115,12 @@ public class PessoaRepository : IPessoaRepository
 
         _context.Pessoa.Remove(pessoaModel);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<long> GetNextCodigo()
+    {
+        long? maxCodigo = await _context.Pessoa.MaxAsync(p => p.Codigo);
+
+        return maxCodigo.GetValueOrDefault() + 1;
     }
 }

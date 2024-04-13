@@ -6,7 +6,7 @@ public class PessoaFactory
 {
     public static PessoaEntity Create(
         Guid? id,
-        string codigo,
+        long codigo,
         string nome,
         string cpf,
         string uf,

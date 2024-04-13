@@ -3,8 +3,8 @@ namespace DesafioSeniorSistemas.Domain.Pessoa.Entity;
 public class PessoaEntity {
     private readonly Guid _id;
     public Guid Id => _id;
-    private string _codigo;
-    public string Codigo => _codigo;
+    private long _codigo;
+    public long Codigo => _codigo;
     private string _nome;
     public string Nome => _nome;
     private ValueObject.CPF _cpf;
@@ -14,7 +14,7 @@ public class PessoaEntity {
     private DateTime _dataNascimento;
     public DateTime DataNascimento => _dataNascimento;
 
-    public PessoaEntity(Guid id, string codigo, string nome, ValueObject.CPF cpf, string uf, DateTime dataNascimento)
+    public PessoaEntity(Guid id, long codigo, string nome, ValueObject.CPF cpf, string uf, DateTime dataNascimento)
     {
         _id = id;
         _codigo = codigo;
@@ -24,7 +24,7 @@ public class PessoaEntity {
         _dataNascimento = dataNascimento;
     }
 
-    public void Change(string codigo, string nome, ValueObject.CPF cpf, string uf, DateTime dataNascimento)
+    public void Change(long codigo, string nome, ValueObject.CPF cpf, string uf, DateTime dataNascimento)
     {
         _codigo = codigo;
         _nome = nome;
@@ -33,7 +33,7 @@ public class PessoaEntity {
         _dataNascimento = dataNascimento;
     }
 
-    public void ChangeCodigo(string codigo)
+    public void ChangeCodigo(long codigo)
     {
         _codigo = codigo;
     }

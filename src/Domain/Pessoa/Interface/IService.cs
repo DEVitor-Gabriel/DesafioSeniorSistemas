@@ -5,10 +5,10 @@ using DesafioSeniorSistemas.Domain.Pessoa.DTO;
 public interface IPessoaService
 {
     Task<List<ReadPessoaDtoOutput>> GetAll();
-    Task<ReadPessoaDtoOutput> GetByCodigo(string codigo);
+    Task<ReadPessoaDtoOutput> GetByCodigo(long codigo);
     Task<List<ReadPessoaDtoOutput>> GetByUf(string uf);
     Task<ReadPessoaDtoOutput> Create(CreatePessoaDtoInput dto);
     Task<ReadPessoaDtoOutput> Update(UpdatePessoaDtoInput dto);
     Task<ReadPessoaDtoOutput> UpdatePatch(UpdatePatchPessoaDtoInput dto);
-    Task Delete(Guid id);
+    Task Delete(long codigo);
 }

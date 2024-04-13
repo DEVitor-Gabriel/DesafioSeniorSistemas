@@ -29,7 +29,7 @@ public class PessoaController : ControllerBase
 
     [HttpGet("GetByCodigo")]
     [Authorize]
-    public async Task<IActionResult> GetByCodigo(string codigo)
+    public async Task<IActionResult> GetByCodigo(long codigo)
     {
         try
         {
@@ -97,11 +97,11 @@ public class PessoaController : ControllerBase
 
     [HttpDelete("Delete")]
     [Authorize]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(long codigo)
     {
         try
         {
-            await _pessoaService.Delete(id);
+            await _pessoaService.Delete(codigo);
             return NoContent();
         }
         catch (NotFoundException)

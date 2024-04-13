@@ -6,5 +6,6 @@ namespace DesafioSeniorSistemas.Domain.Pessoa.Interface;
 public interface IPessoaRepository : IRepository<PessoaEntity>
 {
     Task<List<PessoaEntity>> GetByUf(string uf);
-    Task<PessoaEntity> GetByCodigo(string codigo);
+    Task<PessoaEntity?> GetByCodigo(long codigo);
+    Task<long> GetNextCodigo();
 }

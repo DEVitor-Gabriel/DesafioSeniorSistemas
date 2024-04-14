@@ -56,8 +56,8 @@ public class PessoaController : ControllerBase
     {
         try
         {
-        ReadPessoaDtoOutput output = await _pessoaService.Create(dto);
-        return CreatedAtAction(nameof(GetByCodigo), new { codigo = output.Codigo }, output);
+            ReadPessoaDtoOutput output = await _pessoaService.Create(dto);
+            return CreatedAtAction(nameof(GetByCodigo), new { codigo = output.Codigo }, output);
         }
         catch (ArgumentException ex)
         {
@@ -110,5 +110,5 @@ public class PessoaController : ControllerBase
         }
     }
 
-    
+
 }
